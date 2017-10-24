@@ -96,50 +96,16 @@ it "can search for a voter by name" do
         expect(records.voters.count).to eq(1)
         expect(records.search_voter("Jimmy Jazz")).to eq(nil)
     end
-    it "can delete a politician" 
-end
-=begin
- records =Records.new
-        records.create_politician("John Doe", "Democrate")
-        expect(records.politician.count).to eq(1)
-
-do
-        
- 
- do
-       
- 
- do
-         records =Records.new
-       
-        records.create_politician("John Doe", "Liberal")
-        records.create_politician("Jimmy Jazz", "Socialist") 
-        records.update_politician("John Doe", "Ram Thapa", "Neutral")
-        
-        expect(records.voters[0].name).to eq("Ram Thapa")
-        expect(records.voters[0].political_affiliation).to eq("Neutral")
-     end
- do 
-        records =Records.new
-       
-        records.create_voter("John Doe", "Liberal")
-        records.create_voter("Jimmy Jazz", "Socialist") 
-        
-        expect(records.voters.count).to eq(2)
-        records.delete_voter("Jimmy Jazz")
-        expect(records.voters.count).to eq(1)
-        expect(records.search_voter("Jimmy Jazz")).to eq(nil)
-    end
-do 
+    it "can delete a politician" do 
         records =Records.new
        
         records.create_politician("John Doe", "Liberal")
         records.create_politician("Jimmy Jazz", "Socialist") 
        
         
-        expect(records.politician.count).to eq(3)
+        expect(records.politicians.count).to eq(2)
         records.delete_politician("Jimmy Jazz")
-        expect(records.politician.count).to eq(2)
+        expect(records.politicians.count).to eq(1)
         expect(records.search_politician("Jimmy Jazz")).to eq(nil)
     end
-=end
+end
