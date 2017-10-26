@@ -4,195 +4,187 @@ require './voter.rb'
 require './politician.rb'
 =end
 require './record.rb'
+
+
 class UserI
-  def main
+    def initialize
+        @records = Records.new
+    end
+    
+    def UserI
     play = true
-    while play
+   end
+      def play
+     
       puts  "Welcome to Voter Simulation 2017!"
       puts " You can make directory of voters or politicians"
       puts " You can list those voters or politicians"
       puts " You can even update and delete a voter or politician"
-      puts "What would you like to do now?"
-      puts " "
-      puts "(C)reate, (L)ist, (U)pdate, (E)xit, or (D)elete"
-      menu_choice = gets.chomp.downcase
-      until menu_choice == "c" || menu_choice == "l" || menu_choice == "u" ||
-        menu_choice == "e" || menu_choice == "d"
-        puts "Invalid choice"
-        menu_choice = gets.chomp.downcase
-      end
+      puts "What would you like to do?"
+      puts "(C)reate, (L)ist, (U)pdate, (D)elete or (Q)uit"
+      desired_operation = gets.chomp.downcase.strip
 
-      case menu_choice
-      when "c"
-        puts "What do you want to create?"
-        puts ""
-        puts "(V)oter or (P)olitician?"
-        create_choice = gets.chomp.downcase
-        until create_choice == "v" || create_choice == "p"
-          puts "Invalid choice"
-          create_choice = gets.chomp.downcase
+        case desired_operation
+            when "c"
+                create_operation
+            when "l"
+                puts @records.list
+            when "u"
+                update_operation
+            when "d"
+                delete_operation
+            when "q"
+                return desired_operation
+            else
+                puts "That is not valid selection!!"
+        end       
+    end
+
+    def create_operation
+        puts "What would you like to create?"
+        puts "(P)olitician or (V)oter"
+        user_input = gets.chomp.downcase.strip
+
+        case user_input
+            when "p"
+                puts "Name?"
+                name = gets.chomp.downcase.strip
+                puts "Party?"
+                puts "(D)emocrat or (R)epublican"
+                affiliation = gets.chomp.downcase.strip
+                
+                case affiliation
+                    when "d"
+                        affiliation = "Democrat"
+                    when "r"
+                        affiliation = "Republican"
+                    else 
+                        puts "That is not valid selection!!"
+                end
+          
+                @records.create_politician(name.split.map(&:capitalize).join(' '), affiliation.split.map(&:capitalize).join(' '))
+            when "v" 
+                puts "Name?"
+                name = gets.chomp.downcase.strip
+                puts "Politics?"
+                puts "(L)iberal, (C)onservative, (T)ea Party, (S)ocialist, or (N)eutral"
+                affiliation = gets.chomp.downcase.strip
+            
+            case affiliation
+                    when "l"
+                        affiliation = "Liberal"
+                    when "c"
+                        affiliation = "Conservative"
+                    when "t"
+                        affiliation = "Tea Party"
+                    when "s"
+                        affiliation = "Socialist"
+                    when "n"
+                        affiliation = "Neutral"
+                    else 
+                        puts "That is not valid selection!!"
+                end
+            
+                @records.create_voter(name.split.map(&:capitalize).join(' '), affiliation.split.map(&:capitalize).join(' '))
+            else
+                puts "That is not valid selection!!"  
         end
-        create(create_choice)
-      when "l"
-        list
-      when "u"
+    end
+    
+    def update_operation
         puts "Who would you like to update?"
-        puts "(V)oter or (P)olitician?"
-        update_choice = gets.chomp.downcase
-        until update_choice == "v" || update_choice == "p"
-          puts "Invalid choice"
-          update_choice = gets.chomp.downcase
+        name_old = gets.chomp.downcase.strip
+        upper_name_old = name_old.split.map(&:capitalize).join(' ')
+        
+        # Check if politician exists in records
+        index_for_politician = @records.search_politician(upper_name_old)
+        if index_for_politician
+            puts "New name?"
+            name_new = gets.chomp.downcase.strip
+            upper_name_new = name_new.split.map(&:capitalize).join(' ')
+            puts "New party affilitaion?"
+            puts "(D)emocrat or (R)epublican"
+            affiliation_new = gets.chomp.downcase.strip
+            
+            case affiliation_new
+                when "d"
+                    affiliation_new = "Democrat"
+                when "r"
+                    affiliation_new = "Republican"
+                else 
+                    puts "That is not valid selection!!"
+            end
+            
+            @records.update_politician(upper_name_old, upper_name_new, affiliation_new)
+            puts "You successfully updated politician #{upper_name_new}"
+            
+            return
         end
-        update(update_choice)
-      when "d"
+        
+        # Policitian doesn't exist, so check if voter exists in records
+        index_for_voter = @records.search_voter(name_old.split.map(&:capitalize).join(' '))
+        if index_for_voter
+            puts "New name?"
+            name_new = gets.chomp.downcase.strip
+            upper_name_new = name_new.split.map(&:capitalize).join(' ')
+            puts "New political affilitaion?"
+            puts "(L)iberal, (C)onservative, (T)ea Party, (S)ocialist, or (N)eutral"
+            affiliation_new = gets.chomp.downcase.strip
+            
+            case affiliation_new
+                    when "l"
+                        affiliation_new = "Liberal"
+                    when "c"
+                        affiliation_new = "Conservative"
+                    when "t"
+                        affiliation_new = "Tea Party"
+                    when "s"
+                        affiliation_new = "Socialist"
+                    when "n"
+                        affiliation_new = "Neutral"
+                    else 
+                        puts "That is not valid selection!!"
+                end
+            
+            @records.update_voter(upper_name_old, upper_name_new, affiliation_new)
+            puts "You successfully updated voter #{upper_name_new}"
+            
+            return
+        end
+        
+        # No such records, display user message.
+        puts "#{name_old} not found in our records."
+    end
+    
+    def delete_operation
         puts "Who would you like to delete?"
-        puts "(V)oter or (P)olitician?"
-        delete_choice = gets.chomp.downcase
-        until delete_choice == "v" || delete_choice == "p"
-          puts "Invalid choice"
-          delete_choice = gets.chomp.downcase
+        name = gets.chomp.downcase.strip
+        upper_name = name.split.map(&:capitalize).join(' ')
+     
+        index_for_politician = @records.search_politician(upper_name)
+     
+        if index_for_politician
+            @records.delete_politician(upper_name)
+            puts "You successfully deleted politician #{upper_name}"
+            return
         end
-        delete(delete_choice)
-      when "e"
-        play = false
-      else
-      end
-    end
-  end
-
-  # creates voter or politician
-  def create(create_choice)
-    if create_choice == "v"
-      puts "What is the voter's name?"
-      name = gets.chomp.downcase
-      puts "What is the voter's affiliation?"
-      puts ""
-      puts "Socialist, Tea Party, Liberal, Conservative, Neutral"
-      affiliation = gets.chomp.downcase
-      @voters << Voter.new(name, affiliation).data_hash
-      puts "Saved!"
-    elsif create_choice == "p"
-      puts "What is the politician's name?"
-      name = gets.chomp.downcase
-      puts "What is the politician's affiliation?"
-      puts ""
-      puts "Democratic, Republican"
-      affiliation = gets.chomp.downcase
-      @politicians << Politician.new(name, affiliation).data_hash
-      puts "Saved!"
-    end
-  end
-
-  # lists all voters and politicians
-  def list
-    puts "Here is a list of all the Voters!"
-    puts ""
-    @voters.each do |voter|
-      puts "Voter: #{voter[:name]}, #{voter[:affiliation]}"
-    end
-    puts "Here is the list of all the Politicians!"
-    puts ""
-    @politicians.each do |politician|
-      puts "Politician: #{politician[:name]}, #{politician[:affiliation]}"
-    end
-  end
-
-  # update a voter or politician
-  def update(update_choice)
-    if update_choice == "v"
-      puts "Which Voter would you like to update?"
-      voter = gets.chomp.downcase
-      voter_find(voter)
-    elsif update_choice == "p"
-      puts "Which Politician would you like to update?"
-      politician = gets.chomp.downcase
-      politician_find(politician)
-    else
-    end
-  end
-
-  # method to find the voter to update his/her name and affiliation in update
-  def voter_find(voter)
-    @voters.each do |voter1|
-      if voter1[:name] == voter
-        puts "What would you like to update?"
-        puts "(N)ame or (A)ffiliation?"
-        specific = gets.chomp.downcase
-        if specific == "n"
-          puts "What is the voter's new name?"
-          voter1[:name] = gets.chomp.downcase
-        elsif specific == "a"
-          puts "What is the voter's new affiliation?"
-          voter1[:affiliation] = gets.chomp.downcase
+        
+        index_for_voter = @records.search_voter(upper_name)
+        if index_for_voter
+            @records.delete_voter(upper_name)
+            puts "You successfully deleted politician #{upper_name}"
+            
+            return
+            elsif puts "That is not valid selection!!"
         end
-      end
     end
-  end
-
-  # method to find the politician to update his/her name and affiliation in update
-  def politician_find(politician)
-    @politicians.each do |politician1|
-      if politician1[:name] == politician
-        puts "What would you like to update?"
-        puts "(N)ame or (A)ffiliation?"
-        specific = gets.chomp.downcase
-        if specific == "n"
-        puts "What is the Politician's new name?"
-        politician1[:name] = gets.chomp.downcase
-      elsif specific == "a"
-        puts "What is the Politician's new affiliation?"
-        politician1[:affiliation] = gets.chomp.downcase
-      else
-       end
-     end
-   end
- end
-
-  def delete(delete_choice)
-    if delete_choice == "v"
-      puts "Which Voter would you like to delete?"
-      voter = gets.chomp.downcase
-      delete_voter(voter)
-    elsif delete_choice == "p"
-      puts "Which Politician would you like to delete?"
-      politician = gets.chomp.downcase
-      delete_politician(politician)
-    end
-  end
-
-
-
-  def delete_voter(voter)
-    @voters.each do |voter1|
-      if voter1[:name] == voter
-        puts "Are you sure you want to delete this Voter?"
-        puts "Y / N"
-        entry = gets.chomp.downcase
-        if entry == "y"
-          @voters.delete_if {|h| h[:name] == voter}
-          puts "Deleted!"
-        end
-      end
-    end
-  end
-
-  def delete_politician(politician)
-    @politicians.each do |politician1|
-      if politician1[:name] == politician
-        puts "Are you sure you want to delete this Politician?"
-        puts "Y / N"
-        entry = gets.chomp.downcase
-        if entry == "y"
-          @politicians.delete_if{|h| h[:name] == politician}
-          puts "Deleted!"
-        end
-      end
-    end
-  end
-
-
-
 end
 
-election = UserI.new
-election.main
+userI = UserI.new
+userI.play
+while true
+    if userI.play == "q"
+        puts "Thank you for using the Voter Simulator 2017!"
+        break
+    end
+end
