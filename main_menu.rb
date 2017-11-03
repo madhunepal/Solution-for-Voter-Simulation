@@ -16,12 +16,13 @@ class UserI
    end
       def play
      
-      puts  "Welcome to Voter Simulation 2017!"
+      puts "      Welcome to Voter Simulation 2017!"
       puts " You can make directory of voters or politicians"
       puts " You can list those voters or politicians"
       puts " You can even update and delete a voter or politician"
-      puts "What would you like to do?"
-      puts "(C)reate, (L)ist, (U)pdate, (D)elete or (Q)uit"
+      puts "We hope you will feel great."
+      puts "      What would you like to do, Now?"
+      puts " (C)reate, (L)ist, (U)pdate, (D)elete or (Q)uit"
       desired_operation = gets.chomp.downcase.strip
 
         case desired_operation
